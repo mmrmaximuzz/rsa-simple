@@ -1,0 +1,9 @@
+# vim files
+.*~
+*~
+.*.swp
+
+# binary files
+*.o
+*.exe
+*.obj
