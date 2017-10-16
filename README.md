@@ -5,9 +5,9 @@ Simple RSA implementation in plain C using GMP library.
 
 ## Disclaimer
 
-This is a project made for fun and coding practise. Do not use this program
-if you need a really strong encryption for your data. Try pro crypto systems
-instead.
+This is a project made for fun and coding practise. It is slow, bad-designed
+and vulnerable. Do not use this program if you need a really strong 
+encryption for your data. Try pro crypto systems instead (PGP is a good choice).
 
 ## Requirements
 
@@ -51,6 +51,8 @@ by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa
     `public_key` is the path to your key (messages are usually being encrypted using public RSA keys).
 
     `message_file` is the path to your message file, `encrypted_file` is the path to encrypted result.
+    Be careful - `message_file` and `encrypted_file` must be different files, because
+    `encrypted_file` is truncated first.
 
 * Decryption
 
@@ -62,7 +64,8 @@ by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa
     `encrypted_file` is the path to your encrypted message file,
     `decrypted_file` is the path to decrypted result.
 
-    `encrypted_file` must be encrypted using a public key corresponds to `private_key`.
+    `encrypted_file` and `decrypted_file` must be different.
+    `encrypted_file` must be encrypted using a public key corresponded to `private_key`.
     In other cases you will get a runtime error or the mess in `decrypted_file`.
 
 ## Description
@@ -73,14 +76,14 @@ You can read full RSA description on corresponding
 Input message is divided into blocks of k - 1 bytes where k is the size
 of the RSA key (byte size of RSA modulus N = pq). Each block is treated
 as a k-1 length bigendian number M in 256-based numeral system.
-It is transformed to C = M ^ e mod N and is written to the output with
-the size of the block k - 1 (2 bytes bigendian).
+It is transformed to C = M ^ e mod N (e is the exponent of the key)
+and is written to the output with the size of the block k - 1 (2 bytes bigendian).
 
 ![encryption scheme](pics/crypt_scheme.svg "Encryption scheme")
 
 In the special case of the last block (which could be shorter than
 k - 1 bytes) the /dev/urandom device is used to generate the message tail.
-That randomness enforces last block from brute-force encryption especially
+That randomness enforces last block from brute-force decryption especially
 if the last block is short (less than 10 bytes). The size of the true data
 is written in last block (not the block size).
 
