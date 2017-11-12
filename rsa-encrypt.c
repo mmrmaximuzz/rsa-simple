@@ -54,4 +54,5 @@ int main(int argc, char **argv) {
     fclose(encrypt_file);
     fclose(message_file);
     fclose(key_file);
+    return 0;
 }
