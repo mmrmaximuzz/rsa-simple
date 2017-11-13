@@ -7,3 +7,5 @@
 *.o
 *.exe
 *.obj
+build/*
+bin/*
