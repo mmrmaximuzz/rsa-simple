@@ -6,6 +6,8 @@ CFLAGS := -Wall -O2 -std=c11 -fdiagnostics-color=always -I $(INCDIR)
 EXEDIR := ./bin
 LINKS := -lgmp
 RSABASE := $(OBJDIR)/rsa_base.o $(OBJDIR)/rsa_io.o
+TESTDIR := ./tests
+SUPPRESS := >/dev/null 2>/dev/null
 
 
 all: rsagenerate rsaencrypt rsadecrypt
@@ -22,16 +24,23 @@ rsadecrypt: $(RSABASE) $(OBJDIR)/rsa_decrypt.o
 rsagenerate: $(RSABASE) $(OBJDIR)/rsa_generate_key.o
 	$(CC) -o $(EXEDIR)/rsakeygen $(RSABASE) $(OBJDIR)/rsa_generate_key.o $(CFLAGS) $(LINKS)
 
+test: all
+	@cp $(EXEDIR)/rsaencrypt $(EXEDIR)/rsadecrypt $(EXEDIR)/rsakeygen $(TESTDIR) $(SUPPRESS)
+	bash $(TESTDIR)/stress_test.sh $(TESTDIR)
+	@rm $(TESTDIR)/rsaencrypt $(TESTDIR)/rsadecrypt $(TESTDIR)/rsakeygen $(SUPPRESS)
+
 install:
 	cp $(EXEDIR)/rsaencrypt /usr/bin
 	cp $(EXEDIR)/rsadecrypt /usr/bin
 	cp $(EXEDIR)/rsakeygen  /usr/bin
 
 uninstall:
-	rm /usr/bin/rsaencrypt
-	rm /usr/bin/rsadecrypt
-	rm /usr/bin/rsakeygen
+	rm /usr/bin/rsaencrypt $(SUPPRESS)
+	rm /usr/bin/rsadecrypt $(SUPPRESS)
+	rm /usr/bin/rsakeygen $(SUPPRESS)
 
+.PHONY = clean
 clean:
-	rm $(OBJDIR)/*.o
-	rm $(EXEDIR)/rsaencrypt $(EXEDIR)/rsadecrypt $(EXEDIR)/rsakeygen
+	@rm -f $(OBJDIR)/*.o ${SUPPRESS}
+	@rm -f $(EXEDIR)/rsaencrypt $(EXEDIR)/rsadecrypt $(EXEDIR)/rsakeygen ${SUPPRESS}
+	@echo "Cleaned"
