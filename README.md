@@ -6,7 +6,7 @@ Simple RSA implementation in plain C using GMP library.
 ## Disclaimer
 
 This is a project made for fun and coding practise. It is slow, bad-designed
-and vulnerable. Do not use this program if you need a really strong 
+and may be vulnerable. Do not use this program if you need a really strong
 encryption for your data. Try pro crypto systems instead (PGP is a good choice).
 
 ## Requirements
@@ -22,20 +22,33 @@ encryption for your data. Try pro crypto systems instead (PGP is a good choice).
 
     I am too dumb to make portable programs (yet) so rsa-simple uses
     standard POSIX header `arpa/inet.h` for `htons/ntohs` declarations
-    and random device `/dev/urandom` to generate randoms.
+    and random device `/dev/urandom` to generate randoms. Also it uses bash
+    shell to run tests.
 
 * standard C compiler/linker
 
-## Usage
+## Compilation
 
-Compile and link the program. You can use Makefile in the main directory or compile it
-by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa-decrypt
+You can use Makefile in the main directory
+
+    $ make
+    $ make test
+    $ sudo make install
+
+or compile it from the command line.
+Three executables are generated: rsakeygen, rsaencrypt, rsadecrypt.
+
+To uninstall the program:
+
+    $ sudo make uninstall
+
+## Usage
 
 * Key generation
 
     To generate a new RSA pair run
 
-        $ ./rsa-generate-key key_size public_key private_key
+        $ rsakeygen key_size public_key private_key
 
     `key_size` is the key size (in bytes) you want to generate. `key_size` must be in range
     from 256 to 1024. Lower limit is set to 256 because keys with size less than 256 bytes
@@ -46,7 +59,7 @@ by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa
 
 * Encryption
 
-        $ ./rsa-encrypt public_key message_file encrypted_file
+        $ rsaencrypt public_key message_file encrypted_file
 
     `public_key` is the path to your key (messages are usually being encrypted using public RSA keys).
 
@@ -56,7 +69,7 @@ by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa
 
 * Decryption
 
-        $ ./rsa-decrypt private_key encrypted_file decrypted_file
+        $ rsadecrypt private_key encrypted_file decrypted_file
 
     `private_key` is the path to your key (messages are usually being decrypted using
     private RSA keys).
@@ -65,7 +78,7 @@ by yourself. Three executables are generated: rsa-generate-key, rsa-encrypt, rsa
     `decrypted_file` is the path to decrypted result.
 
     `encrypted_file` and `decrypted_file` must be different.
-    `encrypted_file` must be encrypted using a public key corresponded to `private_key`.
+    Be careful - `encrypted_file` must be encrypted using a public key corresponded to `private_key`.
     In other cases you will get a runtime error or the mess in `decrypted_file`.
 
 ## Description
@@ -84,8 +97,8 @@ and is written to the output with the size of the block k - 1 (2 bytes bigendian
 In the special case of the last block (which could be shorter than
 k - 1 bytes) the /dev/urandom device is used to generate the message tail.
 That randomness enforces last block from brute-force decryption especially
-if the last block is short (less than 10 bytes). The size of the true data
-is written in last block (not the block size).
+if the last block is short. The size of the true data
+is written into the prefix (not the block size).
 
 ![last block](pics/last_block.svg "Last block case")
 
