@@ -10,7 +10,13 @@ TESTDIR := ./tests
 SUPPRESS := >/dev/null 2>/dev/null
 
 
-all: rsagenerate rsaencrypt rsadecrypt
+all: $(OBJDIR) $(EXEDIR) rsagenerate rsaencrypt rsadecrypt
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
+
+$(EXEDIR):
+	mkdir $(EXEDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) -o $@ -c $< $(CFLAGS)
