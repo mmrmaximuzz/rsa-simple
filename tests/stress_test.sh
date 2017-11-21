@@ -49,4 +49,4 @@ do
 done
 
 rm ${public_key} ${private_key}
-echo "All tests are passed"
+echo "All tests passed"
